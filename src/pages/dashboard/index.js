@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Header from "../layouts/Header";
-import Footer from "../layouts/Footer";
+import Header from "../../layouts/Header";
+import Footer from "../../layouts/Footer";
 import { Link } from "react-router-dom";
 import { Button, Card, Row, Col, Nav, ListGroup, Table } from "react-bootstrap";
 import ReactApexChart from "react-apexcharts";
-import { dp1, dp2, dp3 } from "../data/DashboardData";
+import { dp1, dp2, dp3 } from "../../data/DashboardData";
 import { Doughnut } from 'react-chartjs-2';
 
-import crypto1 from "../assets/img/crypto1.jpg";
-import crypto2 from "../assets/img/crypto2.jpg";
-import crypto3 from "../assets/img/crypto3.jpg";
+import crypto1 from "../../assets/img/crypto1.jpg";
+import crypto2 from "../../assets/img/crypto2.jpg";
+import crypto3 from "../../assets/img/crypto3.jpg";
 
 import "cryptofont/css/cryptofont.css";
 

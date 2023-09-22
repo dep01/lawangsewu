@@ -1,10 +1,10 @@
 import React from "react";
 import Router from "./routes";
-// import css
 import "./assets/css/remixicon.css";
-// import scss
 import "./scss/style.scss";
-// set skin on load
+
+import {globalStore,global_base_state} from "./utils/global_store"
+import GlobalLoadingBlock from "./components/atoms/Loading";
 window.addEventListener("load", function () {
   let skinMode = localStorage.getItem("skin-mode");
   let HTMLTag = document.querySelector("html");
@@ -12,18 +12,13 @@ window.addEventListener("load", function () {
     HTMLTag.setAttribute("data-skin", skinMode);
   }
 });
-// redux init
-import { legacy_createStore as createStore } from "redux";
-import { Provider } from "react-redux";
-import { ROOT_REDUCER } from "./redux";
-const store = createStore(ROOT_REDUCER);
 
 export default function App() {
+  const state = {...globalStore(state=>global_base_state(state))}
   return (
-    <Provider store={store}>
-      <React.Fragment>
-       <Router/>
-      </React.Fragment>
-    </Provider>
+    <React.Fragment>
+      {state.is_loading&&<GlobalLoadingBlock/>}
+      <Router />
+    </React.Fragment>
   );
 }

@@ -1,8 +1,26 @@
 import Moment from "moment";
 import { toast } from "react-toastify";
 import jwt_decode from "jwt-decode";
+import {create} from 'zustand';
 import { getToken } from "./session";
 import { sys_labels } from "./constants";
+export const global_base_state = props => {
+  return {
+    is_loading: props?.is_loading ?? false
+  };
+};
+
+export const globalStore = create(set => global_base_state());
+export const setter_global_state = {
+  is_loading: (value = false) => globalStore.setState({is_loading: value}),
+};
+export function SysShowLoading(){
+  setter_global_state.is_loading(true);
+}
+
+export function SysHideLoading(){
+  setter_global_state.is_loading(false);
+}
 export function SysCurrencyTransform({ num = 0, currency = "IDR" }) {
   num = parseInt(num ?? 0);
   if (isNaN(num)) {

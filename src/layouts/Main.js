@@ -1,7 +1,6 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
-
 export default function Main() {
 
   // const offsets = ["/apps/file-manager", "/apps/email", "/apps/calendar"];
@@ -17,7 +16,6 @@ export default function Main() {
 
   // scroll to top when switching pages
   window.scrollTo(0, 0);
-
   return (
     <React.Fragment>
       <Sidebar />

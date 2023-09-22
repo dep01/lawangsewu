@@ -1,0 +1,55 @@
+.filepond--panel-root {
+    background-color: #E6F7FF;
+}
+.filepond--drop-label {
+    border: 2px dashed #039BE5;
+    border-radius: 4px; 
+}
+.filepond--credits {
+    display: none !important;
+}
+
+select .option-hover {
+    background-color: #E6F7FF;
+    border-left: 2px solid #039BE5;
+    padding-left: 5px;
+  }
+  select .option-hover:hover {
+    background-color: #E6F7FF;
+  }
+  select::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
+  select::-webkit-scrollbar-thumb {
+    background-color: #039BE5;
+    border-radius: 4px;
+  }
+
+  select option:hover {
+    padding-left: 25px;
+    width: 270px;
+    color: #EC6F66;
+  }
+.footer {
+
+  background-color: white;
+  padding: 20px;
+  /* position:absolute;
+  bottom: 0px; */
+}
+
+
+.footer img {
+  max-width: 20%;
+  height: auto;
+}
+
+.flatpickr-day:hover,
+.flatpickr-day.today,
+.flatpickr-day.selected {
+  border-radius: 6px;
+}
+  
