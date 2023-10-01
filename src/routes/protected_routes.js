@@ -1,5 +1,5 @@
 import React from "react";
-
+import { STATIC_ROUTES } from "./static_routes";
 export const PROTECTED_ROUTES = [
-  // { path: "dashboard/finance", element: <FinanceMonitoring /> },
-]
+  // { path: STATIC_ROUTES.ELEMENT, element: <Element /> }
+];

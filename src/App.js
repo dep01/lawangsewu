@@ -1,10 +1,10 @@
-import React from "react";
-import Router from "./routes";
+import React,{useEffect} from "react";
+import Router from "./routes/index";
 import "./assets/css/remixicon.css";
 import "./scss/style.scss";
 
 import {globalStore,global_base_state} from "./utils/global_store"
-import GlobalLoadingBlock from "./components/atoms/Loading";
+import GlobalLoadingBlock from "lawangsewu-components/atoms/Loading";
 window.addEventListener("load", function () {
   let skinMode = localStorage.getItem("skin-mode");
   let HTMLTag = document.querySelector("html");

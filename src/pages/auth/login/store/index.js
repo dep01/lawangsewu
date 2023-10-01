@@ -1,9 +1,7 @@
-import { LOGIN_FORM_SCHEMA } from "./schema_form";
+import { FORM_SCHEMA } from "./schema_form";
 import {
-  SysHideLoading,
-  SysShowLoading,
-  SysShowToast,
-} from "../../../../utils/global_store";
+  global_store
+} from "lawangsewu-utils";
 import { create } from "zustand";
 
 export const base_state = (props) => {
@@ -18,10 +16,10 @@ export const action = {
   doLogin: (data) => doLogin(data),
 };
 
-const doLogin = async (form = LOGIN_FORM_SCHEMA) => {
-  SysShowLoading();
+const doLogin = async (form = FORM_SCHEMA) => {
+  global_store.SysShowLoading();
   console.log(form);
   setTimeout(() => {
-    SysHideLoading();
+    global_store.SysHideLoading();
   }, 4000);
 };

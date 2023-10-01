@@ -22,7 +22,8 @@ const Router = () => (
       })}
       <Route element={<PrivateRoute />}>
         <Route element={<Main />}>
-          <Route path="*" element={<Navigate to={STATIC_ROUTES.DASHBOARD} />} />
+          <Route path="*" element={<Navigate to={STATIC_ROUTES.OTHER.NOT_FOUND} />} />
+          <Route element={<Dashboard />} path="/" />
           <Route element={<Dashboard />} path={STATIC_ROUTES.DASHBOARD} />
           {PROTECTED_ROUTES.map((route, index) => {
             return (

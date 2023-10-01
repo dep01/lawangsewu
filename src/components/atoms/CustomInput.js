@@ -16,7 +16,8 @@ const CustomInput = ({
   classContainer ="",
   type='text',
   onKeydown,
-  onPaste
+  onPaste,
+  onChange=()=>{}
 }) => {
   const {
     field: { ref, ...inputProps },
@@ -48,7 +49,7 @@ const CustomInput = ({
           readOnly={readonly}
           className={`${classname}`}
           placeholder={placeholder}
-          onChange={(val) => inputProps.onChange(val.target.value)}
+          onChange={(val) => {inputProps.onChange(val.target.value);onChange(val.target.value)}}
           onPaste={onPaste}
         />
         <label className="text-danger">{errors?.message||""}</label>
