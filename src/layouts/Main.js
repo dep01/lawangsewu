@@ -18,7 +18,7 @@ export default function Main() {
   // scroll to top when switching pages
   window.scrollTo(0, 0);
   return (
-    <div className="container-fluid">
+    <div className="">
       {/* <Sidebar /> */}
       <Outlet />
     </div>

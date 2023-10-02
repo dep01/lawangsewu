@@ -8,6 +8,7 @@ import {
   SysShowLoading,
   SysShowToast,
 } from "../../utils/global_store";
+import {Link} from "react-router-dom"
 import Select from "react-select";
 import { sys_labels } from "../../utils/constants";
 import * as XLSX from "xlsx-js-style";
@@ -18,7 +19,7 @@ const { Search } = Input;
 const base_state = (props) => {
   return {
     tableData: props?.tableData ?? [],
-    pageSize: props?.pageSize ?? 10,
+    pageSize: props?.pageSize ?? 20,
     currentPage: props?.currentPage ?? 1,
     totalItems: props?.totalItems ?? 0,
     searchQuery: props?.searchQuery ?? "",
@@ -31,7 +32,7 @@ const base_state = (props) => {
 };
 const setter = {
   tableData: (val = []) => useStore.setState({ tableData: val }),
-  pageSize: (val = 10) => useStore.setState({ pageSize: val }),
+  pageSize: (val = 20) => useStore.setState({ pageSize: val }),
   currentPage: (val = 1) => useStore.setState({ currentPage: val }),
   totalItems: (val) => useStore.setState({ totalItems: val }),
   searchQuery: (val) => useStore.setState({ searchQuery: val }),
@@ -46,7 +47,7 @@ const DataTable = ({
   fetchDataFunc,
   columns,
   pageSizeOptions = ["10", "20", "30", "50", "100"],
-  defaultPageSize = 10,
+  defaultPageSize = 20,
   title = "",
   filters = [],
   action = [],
@@ -328,54 +329,50 @@ const DataTable = ({
     }
   };
   return (
-    <section className="section">
+    <section
+      className="section"
+      style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
+    >
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
-          <h3>{title}</h3>
+          {action}
+          <Input
+              className="col-md-2"
+              placeholder="Search..."
+              allowClear
+              onChange={handleSearch}
+              onKeyDown={handleEnter}
+            />
+          {/* <div className="row mb-3">
+            <div className="col-md-10">
+              <FilterComponent />
+            </div>
+           
+          </div> */}
         </div>
         <div className="card-body">
           {state.loading && <LoadingComponent />}
           <div
             style={{
-              height: "650px",
+              height: "70vh",
             }}
           >
-            
-          <div
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
-
-            {action}
-          </div>
-            <div className="row mb-3">
-              <div className="col-md-10">
-                <FilterComponent />
-              </div>
-              <Input
-                className="col-md-2"
-                placeholder="Search..."
-                allowClear
-                onChange={handleSearch}
-                onKeyDown={handleEnter}
-              />
-            </div>
             <Table
               dataSource={state.tableData}
               pagination={false}
               className="table-responsive"
               sticky={true}
               onChange={handleTableChange}
+              size="small"
               columns={columns
                 .filter((val) => val.type != "hidden")
-                .map((col) => ({
-                  ...col,
+                .map((col) => ({                  
                   sorter: col.sortable ?? false,
+                  render:(val,record)=>col.route?<Link to={col.route+(record[col?.key_index??"id"])} >{val}</Link>:val,
+                  ...col,
+
                 }))}
-              style={{ marginBottom: 30, height: "550px" }}
+              style={{ marginBottom: 30, height: "65vh" }}
             />
 
             <Pagination

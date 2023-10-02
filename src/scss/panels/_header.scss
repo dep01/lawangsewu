@@ -65,7 +65,8 @@
   right: 0;
   z-index: 800;
   border-bottom: 1px solid $gray-200;
-  background-color: #fff;
+  background-color: blue;
+  // background-color: #fff;
   display: flex;
   align-items: center;
   @include transition(all 0.25s);

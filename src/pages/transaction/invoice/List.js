@@ -23,6 +23,8 @@ const InvoiceList = () => {
       title: "Pelanggan",
       dataIndex: "nama_pelanggan",
       key: "nama_pelanggan",
+      route:STATIC_ROUTES.TRANSACTION.INVOICE_EDIT,
+      key_index:'id'
     },
     {
       title: "Tanggal Invoice",
@@ -59,40 +61,40 @@ const InvoiceList = () => {
       key: "total_tagihan",
       render: (val) => SysCurrencyTransform({ num: val, currency: "" }),
     },
-    {
-      title: "Aksi",
-      dataIndex: "id",
-      key: "action",
-      render: (val, record) => (
-        <div className="btn-group" role="group">
-          <Button
-            onClick={() =>
-              navigate(`${STATIC_ROUTES.TRANSACTION.INVOICE_SHOW}${val}`)
-            }
-            className="btn btn-primary btn-mr"
-          >
-            <i className="ri-file-list-line"></i>
-          </Button>
-          <Button
-            onClick={() =>
-              navigate(`${STATIC_ROUTES.TRANSACTION.INVOICE_EDIT}${val}`)
-            }
-            className="btn btn-info btn-mr"
-          >
-            <i className="ri-pencil-line"></i>
-          </Button>
+    // {
+    //   title: "Aksi",
+    //   dataIndex: "id",
+    //   key: "action",
+    //   render: (val, record) => (
+    //     <div className="btn-group" role="group">
+    //       <Button
+    //         onClick={() =>
+    //           navigate(`${STATIC_ROUTES.TRANSACTION.INVOICE_SHOW}${val}`)
+    //         }
+    //         className="btn btn-primary btn-mr"
+    //       >
+    //         <i className="ri-file-list-line"></i>
+    //       </Button>
+    //       <Button
+    //         onClick={() =>
+    //           navigate(`${STATIC_ROUTES.TRANSACTION.INVOICE_EDIT}${val}`)
+    //         }
+    //         className="btn btn-info btn-mr"
+    //       >
+    //         <i className="ri-pencil-line"></i>
+    //       </Button>
 
-          <Popconfirm
-            title={`Confirmation delete ${record.no_invoice}?`}
-            onConfirm={() => action.deleteData(val)}
-          >
-            <Button className="btn btn-danger btn-mr">
-              <i className="ri-delete-bin-line"></i>
-            </Button>
-          </Popconfirm>
-        </div>
-      ),
-    },
+    //       <Popconfirm
+    //         title={`Confirmation delete ${record.no_invoice}?`}
+    //         onConfirm={() => action.deleteData(val)}
+    //       >
+    //         <Button className="btn btn-danger btn-mr">
+    //           <i className="ri-delete-bin-line"></i>
+    //         </Button>
+    //       </Popconfirm>
+    //     </div>
+    //   ),
+    // },
   ];
   const form_action = [
     <Button>

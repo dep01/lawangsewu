@@ -9,13 +9,16 @@
     border-radius: 15px;
     color: black;
     display: flex;
-    width: 11rem !important;
-    height: 11rem !important;
+    width: 9rem !important;
+    height: 9rem !important;
     justify-content: center;
     align-items: center;
 }
 .module-card:hover{
     cursor: pointer;
-    width: 10.8rem !important;
-    height: 10.8rem !important;
+    width:8.8rem !important;
+    height:8.8rem !important;
 }
+.custom-table .ant-table-tbody > tr > td {
+    height: 30px; /* Set your desired row height here */
+  }
