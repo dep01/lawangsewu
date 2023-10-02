@@ -1,103 +1,122 @@
 import React, { useState, useEffect } from "react";
-import { Table, Pagination, Input, Button } from "antd";
+import { Table, Pagination, Input, Button, Popconfirm } from "antd";
 import {
   SysDateTransform,
   SysGenValueOption,
   SysJWTDecoder,
-  addZero,
-  showToast,
+  SysHideLoading,
+  SysShowLoading,
+  SysShowToast,
 } from "../../utils/global_store";
 import Select from "react-select";
 import { sys_labels } from "../../utils/constants";
 import * as XLSX from "xlsx-js-style";
-import { ALL_ACTION } from "../../redux";
-import { useDispatch } from "react-redux";
-const { Search } = Input;
+import { LoadingComponent } from "../atoms";
+import { create } from "zustand";
 
+const { Search } = Input;
+const base_state = (props) => {
+  return {
+    tableData: props?.tableData ?? [],
+    pageSize: props?.pageSize ?? 10,
+    currentPage: props?.currentPage ?? 1,
+    totalItems: props?.totalItems ?? 0,
+    searchQuery: props?.searchQuery ?? "",
+    sortField: props?.sortField ?? "",
+    sortOrder: props?.sortOrder ?? "",
+    filter: props?.filter ?? "",
+    loading: props?.loading ?? false,
+    selectedFilters: props?.selectedFilters ?? {},
+  };
+};
+const setter = {
+  tableData: (val = []) => useStore.setState({ tableData: val }),
+  pageSize: (val = 10) => useStore.setState({ pageSize: val }),
+  currentPage: (val = 1) => useStore.setState({ currentPage: val }),
+  totalItems: (val) => useStore.setState({ totalItems: val }),
+  searchQuery: (val) => useStore.setState({ searchQuery: val }),
+  sortField: (val) => useStore.setState({ sortField: val }),
+  sortOrder: (val) => useStore.setState({ sortOrder: val }),
+  filter: (val) => useStore.setState({ filter: val }),
+  loading: (val) => useStore.setState({ loading: val }),
+  selectedFilters: (val) => useStore.setState({ selectedFilters: val }),
+};
+const useStore = create((set) => base_state());
 const DataTable = ({
   fetchDataFunc,
   columns,
-  pageSizeOptions = ["10", "20", "30"],
+  pageSizeOptions = ["10", "20", "30", "50", "100"],
   defaultPageSize = 10,
   title = "",
   filters = [],
   action = [],
   withExport = true,
 }) => {
-  const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(defaultPageSize);
-  const [totalItems, setTotalItems] = useState(0);
-  const [tableData, setTableData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortField, setSortField] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [filter, setFilters] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState({});
+  const state = {
+    ...useStore((state) => base_state(state)),
+  };
   const date = new Date();
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, pageSize, searchQuery, filter]);
+  }, [state.currentPage, state.pageSize, state.filter]);
 
-  const fetchData = () => {
-    let sort = `${sortField}:${sortOrder == "ascend" ? "asc" : "desc"}`;
-    if (sortField == "" || sortField == null || sortField == undefined) {
+  const fetchData = (is_clear = false) => {
+    setter.loading(true);
+    let sort = `${state.sortField}:${
+      state.sortOrder == "ascend" ? "asc" : "desc"
+    }`;
+    if (
+      state.sortField == "" ||
+      state.sortField == null ||
+      state.sortField == undefined
+    ) {
       sort = "";
     }
     const my_filter = genFilter();
-    fetchDataFunc(currentPage, pageSize, searchQuery, sort, my_filter)
+    fetchDataFunc(
+      state.currentPage,
+      state.pageSize,
+      is_clear ? "" : state.searchQuery,
+      sort,
+      my_filter
+    )
       .then((data) => {
-        let my_data = data.data;
-        let the_datas = [];
-        for (let index = 0; index < my_data.length; index++) {
-          let clean_data = {};
-          Object.keys(my_data[index]).map((key) => {
-            if (
-              typeof my_data[index][key] === "object" &&
-              my_data[index][key] != null
-            ) {
-              Object.keys(my_data[index][key]).map((key_child) => {
-                clean_data[`${key}_${key_child}`] =
-                  my_data[index][key][key_child] ?? "";
-              });
-            } else {
-              clean_data[key] = my_data[index][key] ?? "";
-            }
-          });
-          the_datas.push(clean_data);
-        }
-        setTableData(the_datas);
-        setTotalItems(data.totalData * pageSize);
+        setter.tableData(data.data);
+        setter.totalItems(data.totalPage * state.pageSize);
+        setter.loading(false);
       })
       .catch((error) => {
-        showToast({ message: error.message, type: "error" });
+        setter.loading(false);
+        SysShowToast({ message: error.message, type: "error" });
       });
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setter.currentPage(page);
   };
 
   const handlePageSizeChange = (current, size) => {
-    setCurrentPage(1);
-    setPageSize(size);
+    setter.currentPage(1);
+    setter.pageSize(size);
   };
 
   const handleSearch = (value) => {
-    setCurrentPage(1);
-
-    setSearchQuery(value);
+    setter.currentPage(1);
+    setter.searchQuery(value.target.value);
+    if (value.target.value == "" || value.target.value == null) {
+      fetchData(true);
+    }
   };
 
   const handleTableChange = (pagination, filters, sorter) => {
     const { field, order } = sorter;
-    setSortField(field);
-    setSortOrder(order);
+    setter.sortField(field);
+    setter.sortOrder(order);
   };
 
   const handleChange = (value, index) => {
-    let my_filter = selectedFilters;
+    let my_filter = state.selectedFilters;
     let my_filter_str = "";
     my_filter[index] = value.value;
     Object.keys(my_filter).map((val) => {
@@ -109,19 +128,19 @@ const DataTable = ({
     if (value.value == "all") {
       delete my_filter[index];
     }
-    setSelectedFilters(my_filter);
-    setFilters(my_filter_str);
+    setter.selectedFilters(my_filter);
+    setter.filter(my_filter_str);
   };
 
   const genFilter = () => {
-    let my_filter = selectedFilters;
+    let my_filter = state.selectedFilters;
     let my_filter_str = "";
     Object.keys(my_filter).map((val) => {
       if (my_filter[val] != "all") {
         my_filter_str += `&${val}=${my_filter[val]}`;
       }
     });
-    setFilters(my_filter_str);
+    setter.filter(my_filter_str);
     return my_filter_str;
   };
   const FilterComponent = () => {
@@ -155,7 +174,7 @@ const DataTable = ({
                 onChange={(value) => handleChange(value, val.index)}
                 value={SysGenValueOption(
                   val.data,
-                  selectedFilters[val.index],
+                  state.selectedFilters[val.index],
                   val.data_id,
                   val.label
                 )}
@@ -168,30 +187,37 @@ const DataTable = ({
             </div>
           );
         })}
-
-        <Search
-          placeholder="Search..."
-          allowClear
-          onSearch={handleSearch}
-          style={{ width: 200, marginTop: 10 }}
-        />
       </div>
     );
   };
-  const handleExport = async () => {
-    dispatch({type:ALL_ACTION.GLOBAL_ACTION.GLOBAL_LOADING_TRUE});
+  const handleExport = async (all_data = false) => {
+    SysShowLoading();
     try {
-      let sort = `${sortField}:${sortOrder == "ascend" ? "asc" : "desc"}`;
-      if (sortField == "" || sortField == null || sortField == undefined) {
+      let sort = `${state.sortField}:${
+        state.sortOrder == "ascend" ? "asc" : "desc"
+      }`;
+      if (
+        state.sortField == "" ||
+        state.sortField == null ||
+        state.sortField == undefined
+      ) {
         sort = "";
       }
-      const resp = await fetchDataFunc(1, 99999999, searchQuery, sort, filter);
-      let str_filter = "";
+      const pages = all_data ? 1 : state.currentPage;
+      const limit = all_data ? state.totalItems : state.pageSize;
+      const resp = await fetchDataFunc(
+        pages,
+        limit,
+        state.searchQuery,
+        sort,
+        state.filter
+      );
+      let str_filter = `search:${state.searchQuery}, `;
 
-      Object.keys(selectedFilters).map((value) => {
+      Object.keys(state.selectedFilters).map((value) => {
         const obj = filters.find((val) => val.index == value);
         const data_selected = obj.data.find(
-          (val) => val[obj.data_id] == selectedFilters[value]
+          (val) => val[obj.data_id] == state.selectedFilters[value]
         );
         str_filter += `${obj.title}: ${data_selected[obj.label]}, `;
       });
@@ -259,10 +285,10 @@ const DataTable = ({
         alignment: { horizontal: "center", vertical: "center" },
         font: { sz: 20, bold: true },
       };
-      const token = SysJWTDecoder();
+      const token = { username: "tester" };
       ws["A2"] = { t: "s", v: "Exported Date: " };
       ws["A3"] = { t: "s", v: "Exported By: " };
-      ws["B3"] = { t: "s", v: token.full_name };
+      ws["B3"] = { t: "s", v: token?.username ?? "" };
       ws["A4"] = { t: "s", v: "Filtered: " };
       ws["B4"] = { t: "s", v: str_filter };
       ws["B2"] = {
@@ -284,52 +310,64 @@ const DataTable = ({
       link.href = url;
       link.setAttribute(
         "download",
-        sys_labels.menus.REPORT + " " + title + ".xlsx"
+        sys_labels.menus.report + " " + title + ".xlsx"
       );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      showToast({ message: error.message });
+      console.log(error);
+      SysShowToast({ message: error.message });
     }
-    dispatch({type:ALL_ACTION.GLOBAL_ACTION.GLOBAL_LOADING_FALSE});
+    SysHideLoading();
+  };
+  const handleEnter = (event) => {
+    if (event.key == "Enter" || event.key == "Tab") {
+      fetchData();
+    }
   };
   return (
     <section className="section">
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
           <h3>{title}</h3>
+        </div>
+        <div className="card-body">
+          {state.loading && <LoadingComponent />}
+          <div
+            style={{
+              height: "650px",
+            }}
+          >
+            
           <div
             style={{
               flexDirection: "row",
-              justifyContent: "flex-end",
+              justifyContent: "flex-start",
               alignItems: "center",
             }}
           >
-            {action}
-            {withExport && (
-              <Button onClick={handleExport} className="btn btn-primary">
-                {sys_labels.action.EXPORT_EXCEL}
-              </Button>
-            )}
-          </div>
-        </div>
-        <div className="card-body">
-          <div
-            style={{
-              overflow: "hidden",
-              minHeight: "450px",
-            }}
-          >
-            <div className="col-md-12" style={{ marginBottom: 16 }}>
-              <FilterComponent />
-            </div>
 
+            {action}
+          </div>
+            <div className="row mb-3">
+              <div className="col-md-10">
+                <FilterComponent />
+              </div>
+              <Input
+                className="col-md-2"
+                placeholder="Search..."
+                allowClear
+                onChange={handleSearch}
+                onKeyDown={handleEnter}
+              />
+            </div>
             <Table
-              dataSource={tableData}
+              dataSource={state.tableData}
               pagination={false}
               className="table-responsive"
+              sticky={true}
               onChange={handleTableChange}
               columns={columns
                 .filter((val) => val.type != "hidden")
@@ -337,19 +375,40 @@ const DataTable = ({
                   ...col,
                   sorter: col.sortable ?? false,
                 }))}
-              style={{ marginBottom: 30 }}
+              style={{ marginBottom: 30, height: "550px" }}
             />
 
             <Pagination
               style={{ position: "absolute", bottom: 15, right: 15 }}
-              current={currentPage}
-              total={totalItems}
-              pageSize={pageSize}
+              current={state.currentPage}
+              total={state.totalItems}
+              pageSize={state.pageSize}
               onChange={handlePageChange}
               showSizeChanger
               onShowSizeChange={handlePageSizeChange}
               pageSizeOptions={pageSizeOptions}
             />
+          </div>
+          <div
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            {withExport && (
+              <Popconfirm
+                cancelText="All Data"
+                title="Select export option!"
+                okText="Only this pages"
+                onCancel={() => handleExport(true)}
+                onConfirm={() => handleExport(false)}
+              >
+                <Button style={{ marginRight: 10 }}>
+                  {sys_labels.action.export_excel}
+                </Button>
+              </Popconfirm>
+            )}
           </div>
         </div>
       </div>

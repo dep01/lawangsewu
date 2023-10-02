@@ -8,11 +8,6 @@
       visibility: visible;
     }
 
-    .header-main,
-    .main-mobile-header,
-    .main { 
-      transform: translateX($sidebar-width + 40px); 
-    }
 
     .main-backdrop {
       opacity: 1;
@@ -40,8 +35,6 @@
                   16px 0 16px rgba($gray-900, 0.01);
     }
 
-    .header-main,
-    .main { transform: translateX($sidebar-width); }
 
     .main-backdrop {
       opacity: 1;

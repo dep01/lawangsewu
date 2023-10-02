@@ -5,7 +5,7 @@ import { STATIC_ROUTES } from './static_routes';
 const PrivateRoutes = () => {
     const token = getToken();
     return(
-        token !=null ? <Outlet/> : <Navigate to={STATIC_ROUTES.AUTH.LOGIN}/>
+        token ==null ? <Outlet/> : <Navigate to={STATIC_ROUTES.AUTH.LOGIN}/>
     )
 }
 

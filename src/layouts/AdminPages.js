@@ -3,16 +3,19 @@ import Header from "./Header";
 import Footer from "./Footer";
 export default function AdminPages({
   children,
+  label="",
   withHeader = true,
-  withFooter = true,
+  withFooter = false,
 }) {
   return (
-    <React.Fragment>
+    <div>
       {withHeader && <Header />}
-      <div className="main main-app p-3 p-lg-4">
+      <div className="col-md-12 p-3 p-lg-4">
+      <h3>{label}</h3>
+        
         {children}
         {withFooter && <Footer />}
       </div>
-    </React.Fragment>
+    </div>
   );
 }

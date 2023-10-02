@@ -1,0 +1,16 @@
+{
+    "id_pelanggan": "33fd216b-4500-42e4-9c61-1d86f2dc58c0",
+    "id_mitra": null,
+    "tanggal_invoice": "2914-06-01",
+    "tanggal_batas_akhir": "2914-06-20",
+    "periode_bulan": 5,
+    "total_tagihan": 25000.0,
+    "status": "A2",
+    "created_date": "2014-05-21T00:00:00",
+    "no_invoice": "INV/2914/05/00001",
+    "id_order": "4d5fb0c2-e230-46cb-a92b-646d66e6173f",
+    "id": "714d8f6e-252e-4252-a77e-752f415a5091",
+    "periode_tahun": 2914,
+    "note": "import_penutupan",
+    "deleted": false
+}

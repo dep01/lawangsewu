@@ -1,5 +1,5 @@
-import React from "react";
-import Router from "./routes";
+import React,{useEffect} from "react";
+import Router from "./routes/index";
 import "./assets/css/remixicon.css";
 import "./scss/style.scss";
 

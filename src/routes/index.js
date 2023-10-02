@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Dashboard from "../pages/dashboard";
+import LandingPage from "../pages/LandingPage";
 
 import PrivateRoute from "./PrivateRoute";
 import ScrollToTop from "./ScrollToTop";
@@ -22,8 +23,8 @@ const Router = () => (
       })}
       <Route element={<PrivateRoute />}>
         <Route element={<Main />}>
-          <Route path="*" element={<Navigate to={STATIC_ROUTES.DASHBOARD} />} />
-          <Route element={<Dashboard />} path={STATIC_ROUTES.DASHBOARD} />
+          <Route path="*" element={<Navigate to={STATIC_ROUTES.OTHER.NOT_FOUND} />} />
+          <Route element={<LandingPage />} path="/" />
           {PROTECTED_ROUTES.map((route, index) => {
             return (
               <Route path={route.path} element={route.element} key={index} />

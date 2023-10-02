@@ -1,0 +1,21 @@
+.btn-mr{
+    margin-right: 10px;
+}
+.btn-ml{
+    margin-left: 10px;
+}
+.module-card{
+    background-color: #fff;
+    border-radius: 15px;
+    color: black;
+    display: flex;
+    width: 11rem !important;
+    height: 11rem !important;
+    justify-content: center;
+    align-items: center;
+}
+.module-card:hover{
+    cursor: pointer;
+    width: 10.8rem !important;
+    height: 10.8rem !important;
+}

@@ -1,11 +1,12 @@
 import React from "react"
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 import Dropdown from 'react-bootstrap/Dropdown';
 import userAvatar from "../assets/img/img1.jpg";
 import notification from "../data/Notification";
 import { STATIC_ROUTES } from "../routes/static_routes";
-
+import {ArrowLeftOutlined} from "@ant-design/icons"
 export default function Header() {
+  const location = useLocation();
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <Link
       to=""
@@ -20,18 +21,8 @@ export default function Header() {
     </Link>
   ));
 
-  const toggleSidebar = (e) => {
-    e.preventDefault();
-    let isOffset = document.body.classList.contains("sidebar-offset");
-    if (isOffset) {
-      document.body.classList.toggle("sidebar-show");
-    } else {
-      if (window.matchMedia("(max-width: 991px)").matches) {
-        document.body.classList.toggle("sidebar-show");
-      } else {
-        document.body.classList.toggle("sidebar-hide");
-      }
-    }
+  const toggleSidebar = () => {
+    window.history.back();
   }
 
   function NotificationList() {
@@ -55,16 +46,13 @@ export default function Header() {
   }
 
   return (
-    <div className="header-main px-3 px-lg-4">
-      <Link onClick={toggleSidebar} className="menu-link me-3 me-lg-4"><i className="ri-menu-2-fill"></i></Link>
+    <div className="header-main">
+      {
+        location.pathname !='/'&&
+      <Link onClick={toggleSidebar} className="menu-link me-3 me-lg-4"><ArrowLeftOutlined /> </Link>
+      }
 
-      <div className="form-search me-auto">
-        <input type="text" className="form-control" placeholder="Search" />
-        <i className="ri-search-line"></i>
-      </div>
-
-
-      <Dropdown className="dropdown-notification ms-3 ms-xl-4" align="end">
+      <Dropdown className="dropdown-notification ms-3 ms-xl-4 pl-3" align="end">
         <Dropdown.Toggle as={CustomToggle}>
           <small>3</small><i className="ri-notification-3-line"></i>
         </Dropdown.Toggle>

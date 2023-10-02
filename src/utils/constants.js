@@ -6,7 +6,10 @@ export const SESSION = {
 export const sys_path_data = {};
 export const sys_icons = {};
 
-export const sys_images = {};
+export const sys_images = {
+  img_chart:require('../assets/img/chart.png'),
+  img_credit:require('../assets/img/credit.png'),
+};
 export const file_template = {};
 
 export const sys_labels = {
@@ -16,6 +19,7 @@ export const sys_labels = {
     transaction: "Transaksi",
     report: "Laporan",
     user: "Pengguna",
+    invoice:"Invoice"
   },
   action: {
     edit: "Ubah",
