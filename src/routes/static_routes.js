@@ -9,10 +9,10 @@ export const STATIC_ROUTES = {
     SIGN_IN: "/auth/sign-in",
   },
   DASHBOARD:"/dashboard",
-  MASTER_DATA: {
-  },
-  TRANSACTION: {
-  },
-  REPORT: {
-  },
+  EXAMPLE:{
+    LIST:"/example",
+    CREATE:"/example/create/",
+    DETAIL:"/example/show/",
+    EDIT:"/example/edit/",
+  }
 };

@@ -11,17 +11,17 @@ const pagesMenu = [
         "link": STATIC_ROUTES.DASHBOARD,
         "icon": "ri-calendar-todo-line"
       },
-    // {
-    //   "label": sys_labels.menus.transaction,
-    //   "icon": "ri-file-text-line",
-    //   "submenu": [
-    //     {
-    //       "label": sys_labels.menus.invoice,
-    //       "link": STATIC_ROUTES.TRANSACTION.INVOICE
-    //     },
+    {
+      "label": sys_labels.menus.example,
+      "icon": "ri-file-text-line",
+      "submenu": [
+        {
+          "label": sys_labels.menus.example,
+          "link": STATIC_ROUTES.EXAMPLE.LIST
+        },
       
-    //   ]
-    // }
+      ]
+    }
     ]
 
 export default class Sidebar extends Component {

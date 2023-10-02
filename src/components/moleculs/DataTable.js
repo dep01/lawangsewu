@@ -82,8 +82,8 @@ const DataTable = ({
       my_filter
     )
       .then((data) => {
-        setter.tableData(data.data);
-        setter.totalItems(data.totalPage * state.pageSize);
+        setter.tableData(data.data.data);
+        setter.totalItems(data.data.totalPages * state.pageSize);
         setter.loading(false);
       })
       .catch((error) => {
@@ -221,7 +221,7 @@ const DataTable = ({
         );
         str_filter += `${obj.title}: ${data_selected[obj.label]}, `;
       });
-      let my_data = resp.data;
+      let my_data = resp.data.data;
       let the_datas = [];
       for (let index = 0; index < my_data.length; index++) {
         let clean_data_structure = {};
@@ -331,41 +331,36 @@ const DataTable = ({
     <section className="section">
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
-          <h3>{title}</h3>
+          <h5>{title}</h5>
+          {action}
         </div>
         <div className="card-body">
           {state.loading && <LoadingComponent />}
           <div
             style={{
-              height: "650px",
+              height: "60vh",
             }}
           >
             
           <div
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
+            className="d-flex flex-row justify-content-between mb-2"
           >
-
-            {action}
-          </div>
-            <div className="row mb-3">
-              <div className="col-md-10">
+            
+            <div className="col-md-10">
                 <FilterComponent />
               </div>
-              <Input
+            <Input
                 className="col-md-2"
                 placeholder="Search..."
                 allowClear
                 onChange={handleSearch}
                 onKeyDown={handleEnter}
               />
-            </div>
+          </div>
             <Table
               dataSource={state.tableData}
               pagination={false}
+              size="small"
               className="table-responsive"
               sticky={true}
               onChange={handleTableChange}
@@ -375,7 +370,7 @@ const DataTable = ({
                   ...col,
                   sorter: col.sortable ?? false,
                 }))}
-              style={{ marginBottom: 30, height: "550px" }}
+              style={{ marginBottom: 30, height: "50vh" }}
             />
 
             <Pagination

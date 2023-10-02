@@ -4,6 +4,16 @@ var childOne = '';
 var childTwo = '';
 var childThree = '';
 var childFour = '';
+
+const capitalized =(str)=>{
+  return str.replace(/^./, str[0].toUpperCase())
+}
+const camelcase=(text = "") =>{
+  let str = text.replace("id_", "");
+  str = str.replace("_id", "");
+  str = capitalized(str);
+  return str.replace(/_([a-z])/g, (match, char) => " " + capitalized(char));
+}
 async function writeFile(dir, name, strFile, message) {
   fs.access(dir, function (error) {
     if (error) {
@@ -45,11 +55,12 @@ async function writeFile(dir, name, strFile, message) {
   });
   return true;
 }
-async function model(fileJson, name,path, withProvider) {
+async function model(fileJson, name,paths, withProvider) {
+  const path = paths??"";
   var data = null;
   var named = name + 'Model';
   try {
-    data = require(`./src/data${path}/${fileJson}`);
+    data = require(`./src/data/${fileJson}`);
   } catch (error) {
     if (fileJson == '') {
       return false;
@@ -188,7 +199,7 @@ ${childFour}
   `;
   console.log('generating file model...');
   await writeFile(
-    './src/model',
+    './src/model'+path,
     named,
     strFile,
     `file model saved to directory src/model${path}/${named}.js`,
@@ -624,60 +635,261 @@ function objectOf${name}(data = null) {
 }`;
   }
 }
-async function view(name) {
-  const dir = `./src/pages/${name}`;
-  console.log('generating view...');
-  const strView = `import React, {useEffect} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-
-import {sys_colors, sys_styles, sys_text_styles} from 'rbase-helpers/constants';
-import {action,setter,useStore,base_state} from './store';
-export default ({navigation}) => {
-  const state = {
-    ...useStore(
-      state => (base_state(state)),
-      shallow,
-    ),
-  };
-
-useEffect(() => {
-  action.initialize();
-  return () => {
-    action.cleanUp();
-  };
-}, [navigation, action]);
-  return (
-    <View style={sys_styles.scaffold}>
-      <View style={sys_styles.container_center_screen}>
-        <Text style={styles.titleText}>This is ${name} page</Text>
-      </View>
-    </View>
-  );
-};
-const styles = StyleSheet.create({
-  titleText: {
-    ...sys_text_styles.header_medium_black,
-  }
-});
-  `;
-  await writeFile(dir, 'index', strView, 'view successfully generated..');
-  console.log('generating store...');
-  const strStore = `import {create} from 'zustand';
-  export function base_state (props) {
-      return {
-        loading: props?.loading??false
+async function view(name,col='',paths) {
+  const columns = col.split(",");
+  const path = paths??"";
+  const dir = `./src/pages${path}/${name}`;
+  console.log('generating listing view...');
+  const strList = `import React from "react";
+  import AdminDashboard from "lawangsewu-layouts";
+  import { Link, useNavigate } from "react-router-dom";
+  import { STATIC_ROUTES } from "lawangsewu-routes";
+  import { sys_labels } from "lawangsewu-utils/constants";
+  import DataTable from "lawangsewu-components/moleculs/DataTable";
+  import { Button, Popconfirm } from "antd";
+  import { action } from "./store";
+  const ${capitalized(name)}List = () => {
+    const navigate = useNavigate();
+    const columns = [
+      ${
+        columns.map(val=>{
+          return `
+          {
+            title:"${camelcase(val)}",
+            dataIndex:"${val}",
+            key:"${val}",
+          }
+          `
+        })
       }
-  }
-  export const useStore = create(set => (base_state()));
-  export const action = {
-    initialize: () => {},
-    cleanUp: () => useStore.destroy(),
+      ,{
+        title: "Aksi",
+        dataIndex: "id",
+        key: "action",
+        render: (val, record) => (
+          <div className="btn-group" role="group">
+            <Button
+              onClick={() =>
+                navigate('')
+              }
+              className="btn btn-primary btn-mr"
+            >
+              <i className="ri-file-list-line"></i>
+            </Button>
+            <Button
+              onClick={() =>
+                navigate('')
+              }
+              className="btn btn-info btn-mr"
+            >
+              <i className="ri-pencil-line"></i>
+            </Button>
+  
+            <Popconfirm
+              title={'Confirmation delete'}
+              onConfirm={() => action.deleteData(val)}
+            >
+              <Button className="btn btn-danger btn-mr">
+                <i className="ri-delete-bin-line"></i>
+              </Button>
+            </Popconfirm>
+          </div>
+        ),
+      }
+    ];
+    const form_action = [
+      <Button>
+        <Link
+          to={''}
+          className="icon icon-left"
+        >
+          <i className="ri-add-line" />
+          {sys_labels.action.add}
+        </Link>
+      </Button>,
+    ];
+    return (
+      <AdminDashboard label={''}>
+        <DataTable
+          fetchDataFunc={thisFuckingProvider}
+          columns={columns}
+          title={''}
+          action={form_action}
+        />
+      </AdminDashboard>
+    );
   };
+  
+  export default ${capitalized(name)}List;
+  
+  `;
+  await writeFile(dir, 'List', strList, 'listing view successfully generated..');
+
+  console.log('generating form...');
+  const strForm = `import {  useParams } from "react-router-dom";
+  import React, { useEffect } from "react";
+  import AdminDashboard from "lawangsewu-layouts";
+  import { useNavigate } from "react-router-dom";
+  import { sys_labels } from "lawangsewu-utils/constants";
+  import { Button } from "antd";
+  import { CustomInput } from "lawangsewu-components";
+  import { Card} from "react-bootstrap";
+  import { useForm } from "react-hook-form";
+  import { FORM_SCHEMA } from "./store/schema_form";
+  import { action, base_state, setter, useStore } from "./store";
+  import useValidationSchema from "lawangsewu-utils/resolver";
+  import { onlyNumber } from "lawangsewu-utils/validation";
+  
+  const ${capitalized(name)}Form = ({ readonly = false }) => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const label ="";
+    const resolver = useValidationSchema(FORM_SCHEMA);
+  
+    const state = {
+      ...useStore((state) => base_state(state)),
+    };
+    const {
+      handleSubmit,
+      control,
+      setValue,
+      formState: { errors },
+    } = useForm({ resolver });
+    useEffect(() => {
+      action.initialized();
+      return () => {
+        action.cleanUp();
+      };
+    }, []);
+    return (
+      <AdminDashboard label={label}>
+        <Card className={'card'}>
+          <Card.Body>
+            <div className="row">
+            ${
+              columns.map(val=>{
+                return`
+                <div className="col-6">
+                  <CustomInput
+                    type="text"
+                    control={control}
+                    placeholder="${camelcase(val)}"
+                    classname="form-control"
+                    name="${val}"
+                    label="${camelcase(val)}"
+                    errors={errors.${val}}
+                    readonly={readonly}
+                    id="${val}"
+                  />
+                </div>
+                `
+              })
+            }
+            </div>
+          </Card.Body>
+          {!readonly && (
+            <Card.Footer>
+              <Button onClick={handleSubmit(action.handleSubmit)}>
+                {id ? sys_labels.action.edit : sys_labels.action.add}
+              </Button>
+            </Card.Footer>
+          )}
+        </Card>
+      </AdminDashboard>
+    );
+  };
+  
+  export default ${capitalized(name)}Form;  
+  `
+  await writeFile(dir, 'Form', strForm, 'form successfully generated..');
+  
+  console.log('creating index...');
+  const strPageIndex =`import ${capitalized(name)}List from "./List";
+  import ${capitalized(name)}Form from "./Form";
+  export {${capitalized(name)}Form,${capitalized(name)}List}`
+  await writeFile(dir, 'index', strPageIndex, 'generate page completed.');
+
+  console.log('generating store...');
+  const strStore = `import {
+    SysHideLoading,
+    SysShowLoading,
+    SysShowToast,
+    TOAST_TYPE,
+  } from "lawangsewu-utils/global_store";
+  import { create } from "zustand";
+  import { FORM_SCHEMA } from "./schema_form";
+  
+  export const base_state = (props) => {
+    return {
+      data: null,
+    };
+  };
+  export const useStore = create((set) => base_state());
   export const setter = {
-    loading: (value = false) => useStore.setState({loading: value}),
+    data: (value = null) => useStore.setState({ data: value }),
   };
-`;
-  writeFile(dir, 'store', strStore, 'store successfully generated..');
+  export const action = {
+    initialized: () => null,
+    cleanUp: () => useStore.setState(base_state()),
+    handleSubmit,
+    deleteData
+  };
+  async function insertData(data = FORM_SCHEMA) {
+    SysShowLoading();
+    try {
+      console.log(data);
+    } catch (error) {
+      throw error;
+    }
+    SysHideLoading();
+  }
+  
+  async function updateData(data = FORM_SCHEMA, id) {
+    SysShowLoading();
+    try {
+      console.log(data, id);
+    } catch (error) {
+      throw error;
+    }
+    SysHideLoading();
+  }
+  async function handleSubmit(data) {
+    const state = base_state(useStore.getState());
+    try {
+      if (state.data?.id) {
+        await updateData(data, state.data.id);
+      } else {
+        await insertData(data);
+      }
+    } catch (error) {
+      SysShowToast({ message: error.message, type: TOAST_TYPE.ERROR });
+    }
+  }
+  
+  async function deleteData( id) {
+    SysShowLoading();
+    try {
+      console.log( id);
+    } catch (error) {
+      throw error;
+    }
+    SysHideLoading();
+  }`;
+  await writeFile(dir+'/store', 'index', strStore, 'store successfully generated..');
+
+  console.log('generating schema...');
+  const strSchema = `import * as yup from "yup";
+
+  export const FORM_SCHEMA = {  
+    ${
+      columns.map(val=>{
+        return `
+        ${val}:yup.string().required("Required!")`
+      })
+    }
+  };`;
+  await writeFile(dir+'/store', 'schema_form', strSchema, 'schema successfully generated..');
+  console.log('view succesfully')
 }
 async function providers(name) {
   console.log('generating provider...');

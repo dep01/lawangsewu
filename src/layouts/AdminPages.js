@@ -11,7 +11,7 @@ export default function AdminPages({
     <React.Fragment>
       {withHeader && <Header />}
       <div className="main main-app p-3 p-lg-4">
-      <h3>{label}</h3>
+      {/* <h5>{label}</h5> */}
         {children}
         {withFooter && <Footer />}
       </div>
