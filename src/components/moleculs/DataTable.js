@@ -9,6 +9,7 @@ import {
   SysShowToast,
 } from "../../utils/global_store";
 import Select from "react-select";
+import {Link} from "react-router-dom"
 import { sys_labels } from "../../utils/constants";
 import * as XLSX from "xlsx-js-style";
 import { LoadingComponent } from "../atoms";
@@ -367,8 +368,9 @@ const DataTable = ({
               columns={columns
                 .filter((val) => val.type != "hidden")
                 .map((col) => ({
-                  ...col,
                   sorter: col.sortable ?? false,
+                  render:(val,record)=>col.route?<Link to={col.route+(record[col?.key_index??"id"])} >{val}</Link>:val,
+                  ...col,
                 }))}
               style={{ marginBottom: 30, height: "50vh" }}
             />
