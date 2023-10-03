@@ -5,13 +5,13 @@ import {
   TOAST_TYPE,
 } from "lawangsewu-utils/global_store";
 import { create } from "zustand";
-import * as provider from "lawangsewu-providers/transaction/invoice";
-import convert from "lawangsewu-model/transaction/invoiceModel";
+import * as provider from "lawangsewu-providers/example";
+import convert from "lawangsewu-model/exampleModel";
 import { FORM_SCHEMA } from "./schema_form";
 
 export const base_state = (props) => {
   return {
-    data: convert.objectOfinvoiceModel(props?.data ?? null),
+    data: convert.objectOfexampleModel(props?.data ?? null),
   };
 };
 export const useStore = create((set) => base_state());
@@ -30,10 +30,10 @@ export const action = {
 async function getDetail(id, setValue) {
   SysShowLoading();
   try {
-    const resp = await provider.getDetail(id);
-    setter.data(resp.data.invoice);
-    Object.keys(resp.data.invoice).map((key) => {
-      setValue(key, resp.data.invoice[key]);
+    const resp = await provider.getById(id);
+    setter.data(resp.data);
+    Object.keys(resp.data).map((key) => {
+      setValue(key, resp.data[key]);
     });
   } catch (error) {
     SysShowToast({ message: error.message, type: TOAST_TYPE.ERROR });
@@ -44,7 +44,6 @@ async function insertData(data = FORM_SCHEMA) {
   SysShowLoading();
   try {
     console.log(data);
-    // const resp = await provider.getData(data)
   } catch (error) {
     throw error;
   }
@@ -55,7 +54,6 @@ async function updateData(data = FORM_SCHEMA, id) {
   SysShowLoading();
   try {
     console.log(data, id);
-    // const resp = await provider.getData(data)
   } catch (error) {
     throw error;
   }
@@ -78,7 +76,6 @@ async function deleteData( id) {
   SysShowLoading();
   try {
     console.log( id);
-    // const resp = await provider.getData(data)
   } catch (error) {
     throw error;
   }

@@ -25,7 +25,7 @@ export const sys_get = async ({ auth = false, endpoint = "" }) => {
     callback.code = response.status;
     callback.success = response.status == 200 ? true : false;
     callback.message = data?.message ?? "";
-    callback.data = data?? null;
+    callback.data = data?.data?? null;
     if (response.status != 201 && response.status != 200) {
       throw callback;
     }
@@ -52,7 +52,7 @@ export const sys_post = async ({ auth = false, endpoint = "", body = {} }) => {
     callback.code = response.status;
     callback.message = data?.message ?? "";
     callback.success = response.status == 200 ? true : false;
-    callback.data = data?? null;
+    callback.data = data?.data?? null;
     if (response.status != 201 && response.status != 200) {
       throw callback;
     }
@@ -77,7 +77,7 @@ export const sys_del = async ({ auth = false, endpoint = "" }) => {
     callback.code = response.status;
     callback.success = response.status == 200 ? true : false;
     callback.message = data?.message ?? "";
-    callback.data = data?? null;
+    callback.data = data?.data?? null;
     if (response.status != 201 && response.status != 200) {
       throw callback;
     }
@@ -111,7 +111,7 @@ export const sys_put = async ({
     callback.code = response.status;
     callback.success = response.status == 200 ? true : false;
     callback.message = data?.message ?? "";
-    callback.data = data?? null;
+    callback.data = data?.data?? null;
     if (response.status != 201 && response.status != 200) {
       throw callback;
     }

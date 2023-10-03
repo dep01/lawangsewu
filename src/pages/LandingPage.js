@@ -1,6 +1,6 @@
 import React from "react";
 import { sys_images, sys_labels } from "lawangsewu-utils/constants";
-import { STATIC_ROUTES } from "lawangsewu-routes";
+import { STATIC_ROUTES } from "lawangsewu-routes/static_routes";
 import AdminPages from "lawangsewu-layouts";
 import { useNavigate } from "react-router-dom";
 
@@ -11,9 +11,9 @@ const modules = [
     icon: sys_images.img_chart,
   },
   {
-    label: sys_labels.menus.transaction,
+    label: sys_labels.menus.example,
     icon: sys_images.img_credit,
-    link: STATIC_ROUTES.TRANSACTION.INVOICE,
+    link: STATIC_ROUTES.EXAMPLE.LIST,
   },
 ];
 

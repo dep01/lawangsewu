@@ -14,12 +14,8 @@ export const file_template = {};
 
 export const sys_labels = {
   menus: {
-    master: "Master Data",
+    example: "Example",
     dashboard: "Dashboard",
-    transaction: "Transaksi",
-    report: "Laporan",
-    user: "Pengguna",
-    invoice:"Invoice"
   },
   action: {
     edit: "Ubah",

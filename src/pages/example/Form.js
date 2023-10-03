@@ -1,11 +1,11 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import React, { useEffect } from "react";
 import AdminDashboard from "lawangsewu-layouts";
 import { useNavigate } from "react-router-dom";
 import { sys_labels } from "lawangsewu-utils/constants";
 import { Button } from "antd";
 import { CustomInput } from "lawangsewu-components";
-import { Card, Col, Container, Form, Nav, Row } from "react-bootstrap";
+import { Card} from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { FORM_SCHEMA } from "./store/schema_form";
 import { action, base_state, setter, useStore } from "./store";
@@ -15,15 +15,14 @@ import {
   SysDateTransform,
 } from "lawangsewu-utils/global_store";
 import { onlyNumber } from "lawangsewu-utils/validation";
-import CustomDatePicker from "lawangsewu-components/atoms/DatePicker";
 
 const InvoiceForm = ({ readonly = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const label =
     id && readonly
-      ? `${sys_labels.action.detail} ${sys_labels.menus.invoice}`
-      : `${sys_labels.action.form} ${sys_labels.menus.invoice}`;
+      ? `${sys_labels.action.detail} ${sys_labels.menus.example}`
+      : `${sys_labels.action.form} ${sys_labels.menus.example}`;
   const resolver = useValidationSchema(FORM_SCHEMA);
 
   const state = {
@@ -50,73 +49,44 @@ const InvoiceForm = ({ readonly = false }) => {
               <CustomInput
                 type="text"
                 control={control}
-                placeholder="No Invoice"
+                placeholder="ID"
                 classname="form-control"
-                name="no_invoice"
-                label="No Invoice"
-                errors={errors.no_invoice}
+                name="id"
+                label="ID"
+                errors={errors.id}
                 readonly={readonly}
-                id="no_invoice"
+                id="id"
               />
             </div>
             <div className="col-6">
               <CustomInput
                 type="text"
                 control={control}
-                placeholder="Total Tagihan"
+                placeholder="User ID"
                 required={true}
                 classname="form-control"
                 onKeydown={onlyNumber}
-                onChange={(val) =>
-                  setter.data({ ...state.data, total_tagihan: val })
-                }
-                name="total_tagihan"
-                label={`Total Tagihan (${SysCurrencyTransform({
-                  num: state.data?.total_tagihan ?? null,
-                  currency: "",
-                })})`}
-                errors={errors.total_tagihan}
+                name="userId"
+                label={`User ID`}
+                errors={errors.userId}
                 readonly={readonly}
-                id="total_tagihan"
+                id="userId"
               />
             </div>
-
-            <div className="col-6">
-              {/* <CustomDatePicker
-                control={control}
-                placeholder="Tanggal Invoice"
-                required={true}
-                classname="form-control"
-                name="tanggal_invoice"
-                onChange={(val) =>
-                  // console.log(val)
-                  setter.data({ ...state.data, tanggal_invoice: val })
-                }
-                label={`Tanggal Invoice (${SysDateTransform({
-                  date: state.data?.tanggal_invoice ?? null,
-                  checkIsToDay: true,
-                })})`}
-                errors={errors.tanggal_invoice}
-                readonly={readonly}
-                id="tanggal_invoice"
-              /> */}
-            </div>
-
+            
             <div className="col-6">
               <CustomInput
                 type="text"
                 control={control}
-                placeholder="Tanggal Batas Akhir"
+                placeholder="Title"
                 required={true}
                 classname="form-control"
-                name="tanggal_batas_akhir"
-                label={`Tanggal Batas Akhir (${SysDateTransform({
-                  date: state.data?.tanggal_batas_akhir ?? null,
-                  checkIsToDay: true,
-                })})`}
-                errors={errors.tanggal_batas_akhir}
+                onKeydown={onlyNumber}
+                name="title"
+                label={`Title`}
+                errors={errors.title}
                 readonly={readonly}
-                id="tanggal_batas_akhir"
+                id="title"
               />
             </div>
           </div>

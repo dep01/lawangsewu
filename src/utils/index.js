@@ -4,7 +4,7 @@ import * as constant from "./constants";
 import * as sessions from "./session";
 import * as global_store from "./global_store";
 import * as is_empty from "./is-empty";
-import * as resolver from "./resolver";
+import * as resolver_form from "./resolver";
 import * as validation from "./validation";
 
 export {
@@ -13,6 +13,6 @@ export {
   sessions,
   global_store,
   is_empty,
-  resolver,
+  resolver_form,
   validation,
 };

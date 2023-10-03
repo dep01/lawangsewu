@@ -83,8 +83,8 @@ const DataTable = ({
       my_filter
     )
       .then((data) => {
-        setter.tableData(data.data);
-        setter.totalItems(data.totalPage * state.pageSize);
+        setter.tableData(data.data.data);
+        setter.totalItems(data.data.totalPages * state.pageSize);
         setter.loading(false);
       })
       .catch((error) => {
@@ -222,7 +222,7 @@ const DataTable = ({
         );
         str_filter += `${obj.title}: ${data_selected[obj.label]}, `;
       });
-      let my_data = resp.data;
+      let my_data = resp.data.data;
       let the_datas = [];
       for (let index = 0; index < my_data.length; index++) {
         let clean_data_structure = {};
