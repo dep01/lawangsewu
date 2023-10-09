@@ -55,7 +55,7 @@ select .option-hover {
   
 .loader-container {
   position: absolute; /* Add this to make the loader dimensions relative to its parent */
-  width: 80%;
+  width: 90%;
   height: 80%;
   display: flex;
   z-index: 100;

@@ -677,11 +677,13 @@ async function view(name, col = "", paths) {
     const navigate = useNavigate();
     const columns = [
       ${columns.map((val) => {
+        
+        const type = checkavailtype(val);
         return `
           {
-            title:"${camelcase(val)}",
-            dataIndex:"${val}",
-            key:"${val}",
+            title:"${camelcase(type.text)}",
+            dataIndex:"${type.text}",
+            key:"${type.text}",
           }
           `;
       })}

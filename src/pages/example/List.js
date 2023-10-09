@@ -11,6 +11,49 @@ import {
   SysDateTransform,
 } from "lawangsewu-utils/global_store";
 import { action } from "./store";
+
+const menu = [
+  {
+    label: "Test",
+    link: "",
+    sub_menu: [
+      {
+        label: "Test 1",
+        link: "",
+      },
+      {
+        label: "Test 2",
+        link: "",
+      },
+    ],
+  },
+
+  {
+    label: "Test 3",
+    link: "",
+    sub_menu: [
+      {
+        label: "Test 4",
+        link: "",
+      },
+      {
+        label: "Test 5",
+        link: "",
+      },
+    ],
+  },
+
+  {
+    label: "Test 6",
+    link: "",
+    sub_menu: [],
+  },
+  
+  {
+    label: "Test 7",
+    link: "",
+  },
+];
 const ExampleList = () => {
   const navigate = useNavigate();
   const columns = [
@@ -86,7 +129,7 @@ const ExampleList = () => {
     </Button>
   ];
   return (
-    <AdminDashboard label={sys_labels.menus.transaction}>
+    <AdminDashboard label={sys_labels.menus.example} menus={menu}>
       <DataTable
         fetchDataFunc={providers.getData}
         columns={columns}

@@ -8,7 +8,7 @@ import {
   SysShowLoading,
   SysShowToast,
 } from "../../utils/global_store";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import Select from "react-select";
 import { sys_labels } from "../../utils/constants";
 import * as XLSX from "xlsx-js-style";
@@ -57,6 +57,9 @@ const DataTable = ({
     ...useStore((state) => base_state(state)),
   };
   const date = new Date();
+  useEffect(() => {
+    useStore.setState(base_state());
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -331,18 +334,24 @@ const DataTable = ({
   return (
     <section
       className="section"
-      style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: "10vh",
+      }}
     >
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
           {action}
           <Input
-              className="col-md-2"
-              placeholder="Search..."
-              allowClear
-              onChange={handleSearch}
-              onKeyDown={handleEnter}
-            />
+            className="col-md-2"
+            placeholder="Search..."
+            allowClear
+            onChange={handleSearch}
+            onKeyDown={handleEnter}
+          />
           {/* <div className="row mb-3">
             <div className="col-md-10">
               <FilterComponent />
@@ -366,11 +375,17 @@ const DataTable = ({
               size="small"
               columns={columns
                 .filter((val) => val.type != "hidden")
-                .map((col) => ({                  
+                .map((col) => ({
                   sorter: col.sortable ?? false,
-                  render:(val,record)=>col.route?<Link to={col.route+(record[col?.key_index??"id"])} >{val}</Link>:val,
+                  render: (val, record) =>
+                    col.route ? (
+                      <Link to={col.route + record[col?.key_index ?? "id"]}>
+                        {val}
+                      </Link>
+                    ) : (
+                      val
+                    ),
                   ...col,
-
                 }))}
               style={{ marginBottom: 30, height: "65vh" }}
             />
