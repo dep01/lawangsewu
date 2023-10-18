@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.8.6",
     "@fullcalendar/core": "^6.1.4",
     "@fullcalendar/daygrid": "^6.1.4",
     "@fullcalendar/react": "^6.1.4",
@@ -21,6 +22,7 @@
     "cryptofont": "^0.1.1",
     "dompurify": "^2.4.3",
     "feather-icons": "^4.29.0",
+    "graphql": "^16.8.1",
     "gridjs": "^6.0.6",
     "gridjs-react": "^6.0.1",
     "jquery": "^3.6.3",

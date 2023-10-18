@@ -6,8 +6,101 @@ import Header from "../../layouts/Header";
 import { dp3 } from "../../data/DashboardData";
 import ReactApexChart from "react-apexcharts";
 
+import { gql, useMutation, useQuery } from '@apollo/client';
+
+/**
+ * Query Init
+ */
+const GET_USERS = gql`
+  query listUsers(
+    $first: Int!
+    $skip: Int!
+    $keywords: String
+  ) {
+    listUsers(
+      first: $first
+      skip: $skip
+      keywords: $keywords
+    ) {
+      items {
+        id
+        usercode
+        email
+      }
+      totalPage
+      currentPage
+    }
+  }
+`;
+
+/**
+ * Mutation Init
+ */
+const LOGIN = gql`
+  mutation login(
+    $email: String!
+    $password: String!
+  ) {
+    login(
+      email: $email
+      password: $password
+    ) {
+      token
+      usercode
+    }
+  }
+`;
+
 export default function FinanceMonitoring() {
 
+  /**
+   * Init GraphQL below
+   * case: login (mutation) with static data, if user exists then button to get user data (query) will show
+   */
+  const [token, setToken] = useState(null);
+
+  /**
+   * QUERY EXAMPLE
+   */
+  const queryResponse = useQuery(GET_USERS, {
+    variables: {
+      first: 1,
+      skip: 10,
+      keywords: ""
+    }
+  })
+  useEffect(() => {
+    if(queryResponse?.data?.listUsers !== undefined) {
+      const listUsers = queryResponse.data.listUsers;
+      console.log("All data here", listUsers);
+    }
+  });
+
+  /**
+   * MUTATION EXAMPLE
+   */
+  const [login, { data, error }] = useMutation(LOGIN);
+  const doLogin = () => {
+    login({
+      variables: {
+        email: "newuser3@gmail.com",
+        password: "123456"
+      }
+    });
+    /**
+     * Handle Result
+     */
+    if (error) console.log(`Something went wrong`, error)
+    if (data?.login?.token !== undefined) {
+      const accessToken = data.login.token;
+      console.log("You are authenticated, here your token: ", accessToken);
+      setToken(accessToken);
+    }
+  }
+
+  /**
+   * Rest of components
+   */
   const seriesOne = [{
     name: 'series1',
     data: dp3
@@ -513,6 +606,9 @@ export default function FinanceMonitoring() {
             </Button>
             <Button variant="" className="btn-white d-flex align-items-center gap-2">
               <i className="ri-printer-line fs-18 lh-1"></i>Print
+            </Button>
+            <Button variant="" className="btn-white d-flex align-items-center gap-2" onClick={doLogin}>
+              Login
             </Button>
             <Button variant="primary" className="d-flex align-items-center gap-2">
               <i className="ri-bar-chart-2-line fs-18 lh-1"></i>Generate<span className="d-none d-sm-inline"> Report</span>
