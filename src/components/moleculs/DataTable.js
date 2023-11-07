@@ -9,7 +9,7 @@ import {
   SysShowToast,
 } from "../../utils/global_store";
 import Select from "react-select";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import { sys_labels } from "../../utils/constants";
 import * as XLSX from "xlsx-js-style";
 import { LoadingComponent } from "../atoms";
@@ -28,6 +28,8 @@ const base_state = (props) => {
     filter: props?.filter ?? "",
     loading: props?.loading ?? false,
     selectedFilters: props?.selectedFilters ?? {},
+    selectedChecked: props?.selectedChecked ?? [],
+    selectedChecked: (val) => useStore.setState({ selectedChecked: val }),
   };
 };
 const setter = {
@@ -52,6 +54,10 @@ const DataTable = ({
   filters = [],
   action = [],
   withExport = true,
+  selectionRow = true,
+  actionSelectionRow = async (id) => console.log(id),
+  actionTitleSelectionRow = sys_labels.action.delete,
+  keySelection = "id",
 }) => {
   const state = {
     ...useStore((state) => base_state(state)),
@@ -328,11 +334,48 @@ const DataTable = ({
       fetchData();
     }
   };
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    setter.selectedChecked(newSelectedRowKeys);
+  };
+  const handleSelectionClick = () => {
+    setter.loading(true);
+    try {
+      for (let index = 0; index < state.selectedChecked.length; index++) {
+        actionSelectionRow(state.selectedChecked[index])
+          .then((resp) => {
+            if (index == state.selectedChecked.length - 1) {
+              setter.loading(false);
+              setter.selectedChecked([]);
+              SysShowToast({ message: "Data succesfully deleted" });
+              fetchData();
+            }
+          })
+          .catch((err) => {
+            setter.loading(false);
+            SysShowToast({ message: err.message, type: TOAST_TYPE.ERROR });
+          });
+      }
+    } catch (error) {
+      setter.loading(false);
+      SysShowToast({ message: error.message, type: TOAST_TYPE.ERROR });
+    }
+  };
   return (
     <section className="section">
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
           <h5>{title}</h5>
+          <div className="col-md-2">
+            {state.selectedChecked.length > 0 && (
+              <>
+                <Button onClick={handleSelectionClick}>
+                  {actionTitleSelectionRow} {state.selectedChecked.length}{" "}
+                  Selected
+                </Button>
+              </>
+            )}
+          </div>
           {action}
         </div>
         <div className="card-body">
@@ -342,23 +385,26 @@ const DataTable = ({
               height: "60vh",
             }}
           >
-            
-          <div
-            className="d-flex flex-row justify-content-between mb-2"
-          >
-            
-            <div className="col-md-10">
+            <div className="d-flex flex-row justify-content-between mb-2">
+              <div className="col-md-10">
                 <FilterComponent />
               </div>
-            <Input
+              <Input
                 className="col-md-2"
                 placeholder="Search..."
                 allowClear
                 onChange={handleSearch}
                 onKeyDown={handleEnter}
               />
-          </div>
+            </div>
             <Table
+              rowSelection={
+                selectionRow && {
+                  selectedRowKeys: state.selectedChecked,
+                  onChange: onSelectChange,
+                  type: "checkbox",
+                }
+              }
               dataSource={state.tableData}
               pagination={false}
               size="small"
@@ -369,7 +415,14 @@ const DataTable = ({
                 .filter((val) => val.type != "hidden")
                 .map((col) => ({
                   sorter: col.sortable ?? false,
-                  render:(val,record)=>col.route?<Link to={col.route+(record[col?.key_index??"id"])} >{val}</Link>:val,
+                  render: (val, record) =>
+                    col.route ? (
+                      <Link to={col.route + record[col?.key_index ?? "id"]}>
+                        {val}
+                      </Link>
+                    ) : (
+                      val
+                    ),
                   ...col,
                 }))}
               style={{ marginBottom: 30, height: "50vh" }}
