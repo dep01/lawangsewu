@@ -1,3 +1,21 @@
+p{
+    font-size: 0.7rem;
+}
+h1{
+    font-size: 1.2rem;
+}
+h2{
+    font-size: 1.1rem;
+}
+h3{
+    font-size: 1rem;
+}
+h4{
+    font-size: 0.9rem;
+}
+h5{
+    font-size: 0.8rem;
+}
 .btn-mr{
     margin-right: 10px;
 }
@@ -9,16 +27,25 @@
     border-radius: 15px;
     color: black;
     display: flex;
-    width: 9rem !important;
-    height: 9rem !important;
+    font-size: 1rem !important;
+    width: 7rem !important;
+    height: 7rem !important;
     justify-content: center;
     align-items: center;
 }
 .module-card:hover{
     cursor: pointer;
-    width:8.8rem !important;
-    height:8.8rem !important;
+    width:6.8rem !important;
+    height:6.8rem !important;
 }
 .custom-table .ant-table-tbody > tr > td {
     height: 30px; /* Set your desired row height here */
   }
+  .no-border {
+    border: 0 !important;
+    box-shadow: none !important; /* You may want to include this as bootstrap applies these styles too */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
