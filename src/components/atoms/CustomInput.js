@@ -13,11 +13,12 @@ const CustomInput = ({
   style = {},
   rules = {},
   classname = "",
-  classContainer ="",
-  type='text',
+  classContainer = "",
+  type = "text",
   onKeydown,
   onPaste,
-  onChange=()=>{}
+  multiline = false,
+  onChange = () => null,
 }) => {
   const {
     field: { ref, ...inputProps },
@@ -29,7 +30,7 @@ const CustomInput = ({
     rules,
     defaultvalue,
   });
-  
+
   return (
     <div className={`col ${classContainer}`}>
       <div className="form-group">
@@ -38,21 +39,46 @@ const CustomInput = ({
             {label} {required ? "*" : ""}
           </label>
         ) : null}
-        <Input
-          id={id}
-          style={style}
-          type={type}
-          name={name}
-          ref={ref}
-          onKeyDown={onKeydown}
-          value={inputProps.value}
-          readOnly={readonly}
-          className={`${classname}`}
-          placeholder={placeholder}
-          onChange={(val) => {inputProps.onChange(val.target.value);onChange(val.target.value)}}
-          onPaste={onPaste}
-        />
-        <label className="text-danger">{errors?.message||""}</label>
+        {multiline ? (
+          <Input.TextArea
+            id={id}
+            style={style}
+            type={type}
+            name={name}
+            rows={5}
+            ref={ref}
+            onKeyDown={onKeydown}
+            value={inputProps.value}
+            readOnly={readonly}
+            className={`${classname}`}
+            placeholder={placeholder}
+            onChange={(val) => {
+              inputProps.onChange(val.target.value);
+              onChange(val.target.value);
+            }}
+            onPaste={onPaste}
+          />
+        ) : (
+          <Input
+            id={id}
+            style={style}
+            type={type}
+            name={name}
+            ref={ref}
+            onKeyDown={onKeydown}
+            value={inputProps.value}
+            readOnly={readonly}
+            className={`${classname}`}
+            placeholder={placeholder}
+            onChange={(val) => {
+              inputProps.onChange(val.target.value);
+              onChange(val.target.value);
+            }}
+            onPaste={onPaste}
+          />
+        )}
+        
+        <label className="text-danger">{errors?.message || ""}</label>
       </div>
     </div>
   );
