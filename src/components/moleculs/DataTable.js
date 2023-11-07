@@ -7,6 +7,7 @@ import {
   SysHideLoading,
   SysShowLoading,
   SysShowToast,
+  TOAST_TYPE,
 } from "../../utils/global_store";
 import { Link } from "react-router-dom";
 import Select from "react-select";
@@ -28,6 +29,7 @@ const base_state = (props) => {
     filter: props?.filter ?? "",
     loading: props?.loading ?? false,
     selectedFilters: props?.selectedFilters ?? {},
+    selectedChecked: props?.selectedChecked ?? [],
   };
 };
 const setter = {
@@ -41,6 +43,7 @@ const setter = {
   filter: (val) => useStore.setState({ filter: val }),
   loading: (val) => useStore.setState({ loading: val }),
   selectedFilters: (val) => useStore.setState({ selectedFilters: val }),
+  selectedChecked: (val) => useStore.setState({ selectedChecked: val }),
 };
 const useStore = create((set) => base_state());
 const DataTable = ({
@@ -52,6 +55,10 @@ const DataTable = ({
   filters = [],
   action = [],
   withExport = true,
+  selectionRow = true,
+  actionSelectionRow = async (id) => console.log(id),
+  actionTitleSelectionRow = sys_labels.action.delete,
+  keySelection = "id",
 }) => {
   const state = {
     ...useStore((state) => base_state(state)),
@@ -78,22 +85,27 @@ const DataTable = ({
       sort = "";
     }
     const my_filter = genFilter();
-    fetchDataFunc(
-      state.currentPage,
-      state.pageSize,
-      is_clear ? "" : state.searchQuery,
-      sort,
-      my_filter
-    )
-      .then((data) => {
-        setter.tableData(data.data.data);
-        setter.totalItems(data.data.totalPages * state.pageSize);
-        setter.loading(false);
-      })
-      .catch((error) => {
-        setter.loading(false);
-        SysShowToast({ message: error.message, type: "error" });
-      });
+    try {
+      fetchDataFunc(
+        state.currentPage,
+        state.pageSize,
+        is_clear ? "" : state.searchQuery,
+        sort,
+        my_filter
+      )
+        .then((data) => {
+          setter.tableData(data.data.items);
+          setter.totalItems(data.data.totalPage * state.pageSize);
+          setter.loading(false);
+        })
+        .catch((error) => {
+          setter.loading(false);
+          SysShowToast({ message: error.message, type: "error" });
+        });
+    } catch (error) {
+      setter.loading(false);
+      SysShowToast({ message: error.message, type: "error" });
+    }
   };
 
   const handlePageChange = (page) => {
@@ -331,6 +343,32 @@ const DataTable = ({
       fetchData();
     }
   };
+  const onSelectChange = (newSelectedRowKeys) => {
+    setter.selectedChecked(newSelectedRowKeys);
+  };
+  const handleSelectionClick = () => {
+    setter.loading(true);
+    try {
+      for (let index = 0; index < state.selectedChecked.length; index++) {
+        actionSelectionRow(state.selectedChecked[index])
+          .then((resp) => {
+            if (index == state.selectedChecked.length-1) {
+              setter.loading(false);
+              setter.selectedChecked([]);
+              SysShowToast({message:"Data succesfully deleted"});
+              fetchData();
+            }
+          })
+          .catch((err) => {
+            setter.loading(false);
+            SysShowToast({ message: err.message, type: TOAST_TYPE.ERROR });
+          });
+      }
+    } catch (error) {
+      setter.loading(false);
+      SysShowToast({ message: error.message, type: TOAST_TYPE.ERROR });
+    }
+  };
   return (
     <section
       className="section"
@@ -344,29 +382,66 @@ const DataTable = ({
     >
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
-          {action}
+          <div className="col-md-2">{action}</div>
+          <div className="col-md-2">
+            {state.selectedChecked.length > 0 && (
+              <>
+                <Button onClick={handleSelectionClick}>
+                  {actionTitleSelectionRow} {state.selectedChecked.length} Selected
+                </Button>
+              </>
+            )}
+          </div>
           <Input
-            className="col-md-2"
+            className="col-md-4"
             placeholder="Search..."
             allowClear
             onChange={handleSearch}
             onKeyDown={handleEnter}
           />
-          {/* <div className="row mb-3">
+          <Pagination
+            className="col-md-4 d-flex justify-content-end"
+            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total}`}
+            itemRender={(current, type, originalElement) => {
+              if (type === "prev") {
+                return originalElement;
+              }
+              if (type === "next") {
+                return originalElement;
+              }
+              return null;
+            }}
+            current={state.currentPage}
+            total={state.totalItems}
+            pageSize={state.pageSize}
+            onChange={handlePageChange}
+            showSizeChanger
+            onShowSizeChange={handlePageSizeChange}
+            pageSizeOptions={pageSizeOptions}
+          />
+          <div className="row mb-3">
             <div className="col-md-10">
               <FilterComponent />
             </div>
            
-          </div> */}
+          </div>
         </div>
         <div className="card-body">
           {state.loading && <LoadingComponent />}
           <div
             style={{
-              height: "70vh",
+              height: "76vh",
             }}
           >
             <Table
+              rowSelection={
+                selectionRow && {
+                  selectedRowKeys: state.selectedChecked,
+                  onChange: onSelectChange,
+                  type: "checkbox",
+                }
+              }
+              rowKey={keySelection}
               dataSource={state.tableData}
               pagination={false}
               className="table-responsive"
@@ -387,10 +462,10 @@ const DataTable = ({
                     ),
                   ...col,
                 }))}
-              style={{ marginBottom: 30, height: "65vh" }}
+              style={{ height: "76vh" }}
             />
 
-            <Pagination
+            {/* <Pagination
               style={{ position: "absolute", bottom: 15, right: 15 }}
               current={state.currentPage}
               total={state.totalItems}
@@ -399,7 +474,7 @@ const DataTable = ({
               showSizeChanger
               onShowSizeChange={handlePageSizeChange}
               pageSizeOptions={pageSizeOptions}
-            />
+            /> */}
           </div>
           <div
             style={{
